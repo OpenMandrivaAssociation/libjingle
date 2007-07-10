@@ -1,21 +1,21 @@
 %define	major 0
 %define libname	%mklibname jingle %{major}
+%define develname %mklibname -d jingle
 
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
-Version:	0.3.10
+Version:	0.3.11
 Release:	%mkrel 1
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
 Source0:	http://dl.sf.net/libjingle/%{name}-%{version}.tar.bz2
-Patch0:		libjingle-0.3.10-libtool_fixes.diff
 BuildRequires:	glib2-devel 
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
 BuildRequires:	expat-devel
-BuildRequires:	autoconf2.5
-BuildRequires:	automake1.7
+BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	libtool
 Buildroot:	%{_tmppath}/%{name}-%{version}-buildroot
 
@@ -39,13 +39,14 @@ experimental draft form.
 
 This package contains the shared %{name} library.
 
-%package -n	%{libname}-devel
+%package -n	%{develname}
 Summary:	Static library and header files for the %{name} library
 Group:		Development/C++
 Provides:	%{name}-devel = %{version}
-Requires:	%{libname} = %{version}
+Requires:	%{libname} = %{version}-%{release}
+Obsoletes:	%{libname}-devel
 
-%description -n	%{libname}-devel
+%description -n	%{develname}
 Libjingle is a set of C++ components provided by Google to interoperate with
 Google Talk's peer-to-peer and voice calling capabilities. The package includes
 source code for Google's implementation of Jingle and Jingle-Audio, two
@@ -58,7 +59,6 @@ needed to compile applications such as stegdetect, etc.
 %prep
 
 %setup -q
-%patch0 -p1
 
 # cleanup
 for i in `find . -type d -name .svn`; do
@@ -71,7 +71,7 @@ perl -pi -e "s|/lib\b|/%{_lib}|g" configure*
 %build
 rm -rf autom4te.cache
 rm -f configure
-libtoolize --copy --force; aclocal-1.7; automake-1.7 --add-missing --copy --foreign; autoconf
+libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; autoconf
 
 
 %configure2_5x \
@@ -102,13 +102,10 @@ libtoolize --copy --force; aclocal-1.7; automake-1.7 --add-missing --copy --fore
 %defattr(-,root,root)
 %{_libdir}/lib*.so.*
 
-%files -n %{libname}-devel
+%files -n %{develname}
 %defattr(-, root, root)
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
-
-
-
