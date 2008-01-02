@@ -17,6 +17,7 @@ BuildRequires:	expat-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
+Buildroot:	%{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 Libjingle is a set of C++ components provided by Google to interoperate with
