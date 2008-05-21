@@ -5,11 +5,12 @@
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
 Version:	0.3.11
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
 Source0:	http://dl.sf.net/libjingle/%{name}-%{version}.tar.bz2
+Patch0:		%{name}-%{version}-gcc43.patch
 BuildRequires:	glib2-devel 
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
@@ -17,7 +18,7 @@ BuildRequires:	expat-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-Buildroot:	%{_tmppath}/%{name}-%{version}-buildroot
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Libjingle is a set of C++ components provided by Google to interoperate with
@@ -59,6 +60,7 @@ needed to compile applications such as stegdetect, etc.
 %prep
 
 %setup -q
+%patch0 -p0 -b .gcc43
 
 # cleanup
 for i in `find . -type d -name .svn`; do
