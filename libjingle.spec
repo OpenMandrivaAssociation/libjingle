@@ -4,13 +4,15 @@
 
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
-Version:	0.3.11
-Release:	%mkrel 2
+Version:	0.4.0
+Release:	%mkrel 1
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
-Source0:	http://dl.sf.net/libjingle/%{name}-%{version}.tar.bz2
-Patch0:		%{name}-%{version}-gcc43.patch
+Source0:	http://dl.sf.net/libjingle/%{name}-%{version}.tar.gz
+# http://code.google.com/p/libjingle/issues/detail?id=2
+Patch0:		libjingle-0.4.0-gcc43.patch
+Patch1:		libjingle-0.4.0-ortp.patch
 BuildRequires:	glib2-devel 
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
@@ -18,6 +20,10 @@ BuildRequires:	expat-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
+BuildRequires:	speex-devel
+BuildRequires:	libilbc-devel
+BuildRequires:	ortp-devel
+BuildRequires:	alsa-lib-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -45,7 +51,7 @@ Summary:	Static library and header files for the %{name} library
 Group:		Development/C++
 Provides:	%{name}-devel = %{version}
 Requires:	%{libname} = %{version}-%{release}
-Obsoletes:	%{libname}-devel
+Obsoletes:	%{mklibname -d jingle 0}
 
 %description -n	%{develname}
 Libjingle is a set of C++ components provided by Google to interoperate with
@@ -60,7 +66,11 @@ needed to compile applications such as stegdetect, etc.
 %prep
 
 %setup -q
-%patch0 -p0 -b .gcc43
+%patch0 -p0
+%patch1 -p1
+
+find . -type d -exec chmod 755 {} \;
+find . -type f -exec chmod 644 {} \;
 
 # cleanup
 for i in `find . -type d -name .svn`; do
@@ -75,11 +85,12 @@ rm -rf autom4te.cache
 rm -f configure
 libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; autoconf
 
-
 %configure2_5x \
     --enable-shared \
-    --enable-static
-
+    --enable-static \
+    --with-speex=%{_prefix} \
+    --with-ilbc=%{_prefix}
+    
 %make
 
 %install
