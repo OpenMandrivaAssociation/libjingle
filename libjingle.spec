@@ -5,7 +5,7 @@
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
 Version:	0.4.0
-Release:	%mkrel 1
+Release:	%mkrel 3
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
