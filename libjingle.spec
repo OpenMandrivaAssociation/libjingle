@@ -1,18 +1,18 @@
+%define _disable_ld_no_undefined 1
+
 %define	major 0
 %define libname	%mklibname jingle %{major}
 %define develname %mklibname -d jingle
 
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
-Version:	0.4.0
-Release:	%mkrel 3
+Version:	0.3.12
+Release:	%mkrel 1
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
-Source0:	http://dl.sf.net/libjingle/%{name}-%{version}.tar.gz
-# http://code.google.com/p/libjingle/issues/detail?id=2
-Patch0:		libjingle-0.4.0-gcc43.patch
-Patch1:		libjingle-0.4.0-ortp.patch
+Source0:	http://farsight.freedesktop.org/releases/libjingle/%{name}-%{version}.tar.gz
+Patch0:		libjingle-0.3.12-linkage_fix.diff
 BuildRequires:	glib2-devel 
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
@@ -20,10 +20,6 @@ BuildRequires:	expat-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-BuildRequires:	speex-devel
-BuildRequires:	libilbc-devel
-BuildRequires:	ortp-devel
-BuildRequires:	alsa-lib-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -66,8 +62,7 @@ needed to compile applications such as stegdetect, etc.
 %prep
 
 %setup -q
-%patch0 -p0
-%patch1 -p1
+%patch0 -p1
 
 find . -type d -exec chmod 755 {} \;
 find . -type f -exec chmod 644 {} \;
@@ -87,14 +82,12 @@ libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; aut
 
 %configure2_5x \
     --enable-shared \
-    --enable-static \
-    --with-speex=%{_prefix} \
-    --with-ilbc=%{_prefix}
-    
+    --enable-static
+
 %make
 
 %install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %makeinstall
 
@@ -107,7 +100,7 @@ libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; aut
 %endif
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
