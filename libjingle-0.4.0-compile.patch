@@ -1,0 +1,381 @@
+--- libjingle-0.4.0/talk/base/asynctcpsocket.cc.bero	2012-12-06 21:53:24.429966853 +0100
++++ libjingle-0.4.0/talk/base/asynctcpsocket.cc	2012-12-06 21:53:35.226045548 +0100
+@@ -33,6 +33,7 @@
+ #include "talk/base/byteorder.h"
+ #include "talk/base/common.h"
+ #include "talk/base/logging.h"
++#include <cstring>
+ 
+ #if defined(_MSC_VER) && _MSC_VER < 1300
+ namespace std {
+--- libjingle-0.4.0/talk/base/base64.h.bero	2012-12-06 21:55:04.412694352 +0100
++++ libjingle-0.4.0/talk/base/base64.h	2012-12-06 21:55:14.263766305 +0100
+@@ -23,8 +23,8 @@ public:
+   static std::string decode(const std::string & data);
+   static std::string encodeFromArray(const char * data, size_t len);
+ private:
+-  static const std::string Base64::Base64Table;
+-  static const std::string::size_type Base64::DecodeTable[];
++  static const std::string Base64Table;
++  static const std::string::size_type DecodeTable[];
+ };
+ 
+ } // namespace talk_base
+--- libjingle-0.4.0/talk/base/bytebuffer.cc.bero	2012-12-06 21:50:42.127798134 +0100
++++ libjingle-0.4.0/talk/base/bytebuffer.cc	2012-12-06 21:50:57.402907445 +0100
+@@ -27,6 +27,7 @@
+ 
+ #include <algorithm>
+ #include <cassert>
++#include <cstring>
+ 
+ #include "talk/base/basictypes.h"
+ #include "talk/base/bytebuffer.h"
+--- libjingle-0.4.0/talk/base/cryptstring.h.bero	2012-12-06 22:09:30.974705631 +0100
++++ libjingle-0.4.0/talk/base/cryptstring.h	2012-12-06 22:09:38.456771168 +0100
+@@ -29,6 +29,7 @@
+ #define _TALK_BASE_CRYPTSTRING_H_
+ 
+ #include <string>
++#include <cstring>
+ #include "talk/base/linked_ptr.h"
+ #include "talk/base/scoped_ptr.h"
+ 
+--- libjingle-0.4.0/talk/base/host.cc.bero	2012-12-06 22:04:43.063253391 +0100
++++ libjingle-0.4.0/talk/base/host.cc	2012-12-06 22:04:51.099321526 +0100
+@@ -28,6 +28,7 @@
+ #include <string>
+ #include <iostream>
+ #include <cassert>
++#include <cstdlib>
+ #include <errno.h>
+ 
+ #ifdef POSIX
+--- libjingle-0.4.0/talk/base/logging.cc.bero	2012-12-06 22:10:59.756466628 +0100
++++ libjingle-0.4.0/talk/base/logging.cc	2012-12-06 22:11:23.928674400 +0100
+@@ -33,6 +33,8 @@
+ 
+ #include <iostream>
+ #include <iomanip>
++#include <cstring>
++#include <cstdio>
+ 
+ #include "talk/base/logging.h"
+ #include "talk/base/stream.h"
+--- libjingle-0.4.0/talk/base/messagequeue.h.bero	2012-12-06 21:50:20.551643923 +0100
++++ libjingle-0.4.0/talk/base/messagequeue.h	2012-12-06 21:50:28.922703598 +0100
+@@ -31,6 +31,7 @@
+ #include <vector>
+ #include <queue>
+ #include <algorithm>
++#include <cstring>
+ #include "talk/base/basictypes.h"
+ #include "talk/base/criticalsection.h"
+ #include "talk/base/socketserver.h"
+--- libjingle-0.4.0/talk/base/natsocketfactory.cc.bero	2012-12-06 22:14:39.883358516 +0100
++++ libjingle-0.4.0/talk/base/natsocketfactory.cc	2012-12-06 22:14:47.070422037 +0100
+@@ -27,6 +27,7 @@
+ 
+ #include <iostream>
+ #include <cassert>
++#include <cstring>
+ #include "talk/base/natsocketfactory.h"
+ 
+ namespace talk_base {
+--- libjingle-0.4.0/talk/base/network.cc.bero	2012-12-06 21:51:45.701254191 +0100
++++ libjingle-0.4.0/talk/base/network.cc	2012-12-06 21:51:53.859312771 +0100
+@@ -30,6 +30,7 @@
+ #include <cfloat>
+ #include <cmath>
+ #include <sstream>
++#include <cstring>
+ 
+ #ifdef POSIX
+ extern "C" {
+--- libjingle-0.4.0/talk/base/openssladapter.cc.bero	2012-12-06 22:13:28.018739693 +0100
++++ libjingle-0.4.0/talk/base/openssladapter.cc	2012-12-06 22:13:34.743797771 +0100
+@@ -641,7 +641,7 @@ OpenSSLAdapter::SSLPostConnectionCheck(S
+     int extension_nid = OBJ_obj2nid(X509_EXTENSION_get_object(extension));
+ 
+     if (extension_nid == NID_subject_alt_name) {
+-      X509V3_EXT_METHOD* meth = X509V3_EXT_get(extension);
++      X509V3_EXT_METHOD const * meth = X509V3_EXT_get(extension);
+       if (!meth)
+         break;
+ 
+--- libjingle-0.4.0/talk/base/proxydetect.cc.bero	2012-12-06 21:54:39.244511242 +0100
++++ libjingle-0.4.0/talk/base/proxydetect.cc	2012-12-06 21:54:45.192554162 +0100
+@@ -5,6 +5,7 @@
+ #include <shlobj.h>
+ #endif
+ 
++#include <cstring>
+ #include "talk/base/httpcommon.h"
+ #include "talk/base/httpcommon-inl.h"
+ #include "talk/base/proxydetect.h"
+--- libjingle-0.4.0/talk/base/sigslot.h.bero	2012-12-06 21:51:16.343043494 +0100
++++ libjingle-0.4.0/talk/base/sigslot.h	2012-12-06 21:51:24.402101724 +0100
+@@ -80,6 +80,7 @@
+ 
+ #include <set>
+ #include <list>
++#include <cstdlib>
+ 
+ // On our copy of sigslot.h, we force single threading
+ #define SIGSLOT_PURE_ISO
+--- libjingle-0.4.0/talk/base/socketadapters.cc.bero	2012-12-06 21:53:47.108131695 +0100
++++ libjingle-0.4.0/talk/base/socketadapters.cc	2012-12-06 21:53:53.945181492 +0100
+@@ -31,6 +31,7 @@
+ 
+ #include <time.h>
+ #include <errno.h>
++#include <cstring>
+ 
+ #ifdef WIN32
+ #include <winsock2.h>
+--- libjingle-0.4.0/talk/base/socketaddress.cc.bero	2012-12-06 21:49:48.959417962 +0100
++++ libjingle-0.4.0/talk/base/socketaddress.cc	2012-12-06 21:50:01.475507494 +0100
+@@ -31,6 +31,7 @@
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ #include <netdb.h>
++#include <unistd.h>
+ #endif
+ 
+ #include <cstring>
+--- libjingle-0.4.0/talk/base/ssladapter.cc.bero	2012-12-06 22:12:14.851111240 +0100
++++ libjingle-0.4.0/talk/base/ssladapter.cc	2012-12-06 22:12:29.271235149 +0100
+@@ -50,6 +50,7 @@ namespace talk_base {
+ namespace talk_base {
+   typedef OpenSSLAdapter DefaultSSLAdapter;
+ }
++#define _POSIX_THREADS 1
+ #if defined(WIN32)
+   #define MUTEX_TYPE HANDLE
+   #define MUTEX_SETUP(x) (x) = CreateMutex(NULL, FALSE, NULL)
+--- libjingle-0.4.0/talk/base/stream.cc.bero	2012-12-06 22:11:36.636783336 +0100
++++ libjingle-0.4.0/talk/base/stream.cc	2012-12-06 22:11:47.159873627 +0100
+@@ -29,6 +29,8 @@
+ #include <sys/stat.h>
+ #include <errno.h>
+ #include <string>
++#include <cstdio>
++#include <cstring>
+ #include "talk/base/basictypes.h"
+ #include "talk/base/common.h"
+ #include "talk/base/stream.h"
+--- libjingle-0.4.0/talk/base/streamutils.cc.bero	2012-12-06 22:14:21.027195700 +0100
++++ libjingle-0.4.0/talk/base/streamutils.cc	2012-12-06 22:14:29.638269981 +0100
+@@ -28,6 +28,7 @@
+ 
+ #include "talk/base/common.h"
+ #include "talk/base/streamutils.h"
++#include <cstring>
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+ // TODO: Extend so that one side can close, and other side can send
+--- libjingle-0.4.0/talk/base/stringencode.cc.bero	2012-12-06 22:05:05.671445470 +0100
++++ libjingle-0.4.0/talk/base/stringencode.cc	2012-12-06 22:06:26.898136347 +0100
+@@ -33,6 +33,9 @@
+ #define _alloca alloca
+ #endif  // POSIX
+ 
++#include <cstring>
++#include <cstdlib>
++
+ #include "talk/base/basictypes.h"
+ #include "talk/base/common.h"
+ #include "talk/base/stringencode.h"
+--- libjingle-0.4.0/talk/base/stringutils.h.bero	2012-12-06 21:54:21.796383295 +0100
++++ libjingle-0.4.0/talk/base/stringutils.h	2012-12-06 22:09:09.713525121 +0100
+@@ -36,6 +36,7 @@
+ #endif  // WIN32
+ 
+ #include <string>
++#include <cstring>
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+ // Generic string/memory utilities
+@@ -197,15 +198,6 @@ size_t strcatn(CTYPE* buffer, size_t buf
+ }
+ 
+ template<class CTYPE>
+-size_t sprintfn(CTYPE* buffer, size_t buflen, const CTYPE* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  size_t len = vsprintfn(buffer, buflen, format, args);
+-  va_end(args);
+-  return len;
+-}
+-
+-template<class CTYPE>
+ size_t vsprintfn(CTYPE* buffer, size_t buflen, const CTYPE* format,
+                  va_list args) {
+   int len = vsnprintf(buffer, buflen, format, args);
+@@ -216,6 +208,15 @@ size_t vsprintfn(CTYPE* buffer, size_t b
+   return len;
+ }
+ 
++template<class CTYPE>
++size_t sprintfn(CTYPE* buffer, size_t buflen, const CTYPE* format, ...) {
++  va_list args;
++  va_start(args, format);
++  size_t len = vsprintfn(buffer, buflen, format, args);
++  va_end(args);
++  return len;
++}
++
+ ///////////////////////////////////////////////////////////////////////////////
+ // Allow safe comparing and copying ascii (not UTF-8) with both wide and
+ // non-wide character strings.
+@@ -269,7 +270,7 @@ size_t asccpyn(wchar_t* buffer, size_t b
+ template<>
+ struct Traits<char> {
+   typedef std::string string;
+-  inline static const char* Traits<char>::empty_str() { return ""; }
++  inline static const char* empty_str() { return ""; }
+ };
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+--- libjingle-0.4.0/talk/base/urlencode.cc.bero	2012-12-06 22:13:51.827944845 +0100
++++ libjingle-0.4.0/talk/base/urlencode.cc	2012-12-06 22:14:08.105084880 +0100
+@@ -1,4 +1,6 @@
+ #include "talk/base/urlencode.h"
++#include <cstring>
++#include <cstdlib>
+ 
+ static int HexPairValue(const char * code) {
+   int value = 0;
+--- libjingle-0.4.0/talk/examples/login/login_main.cc.bero	2012-12-06 22:21:56.369135524 +0100
++++ libjingle-0.4.0/talk/examples/login/login_main.cc	2012-12-06 22:22:07.531232763 +0100
+@@ -29,6 +29,8 @@
+ #include "talk/xmpp/xmppclientsettings.h"
+ #include "talk/examples/login/xmppthread.h"
+ #include <iostream>
++#include <cstring>
++#include <cstdio>
+ 
+ int main(int argc, char **argv) {
+   printf("Auth Cookie: ");
+--- libjingle-0.4.0/talk/p2p/base/port_unittest.cc.bero	2012-12-06 22:19:24.024813546 +0100
++++ libjingle-0.4.0/talk/p2p/base/port_unittest.cc	2012-12-06 22:19:59.389120063 +0100
+@@ -11,6 +11,8 @@
+ #include "talk/p2p/base/stunport.h"
+ #include "talk/p2p/base/stunserver.h"
+ #include <iostream>
++#include <cstring>
++#include <cstdio>
+ 
+ using namespace cricket;
+ 
+--- libjingle-0.4.0/talk/p2p/base/pseudotcp.cc.bero	2012-12-06 22:16:52.450502094 +0100
++++ libjingle-0.4.0/talk/p2p/base/pseudotcp.cc	2012-12-06 22:16:59.509562768 +0100
+@@ -35,6 +35,8 @@
+ #include "talk/base/time.h"
+ #include "talk/p2p/base/pseudotcp.h"
+ 
++#include <cstdlib>
++
+ #ifdef POSIX
+ extern "C" {
+ #include <errno.h>
+--- libjingle-0.4.0/talk/p2p/base/sessionmanager.h.bero	2012-12-06 22:16:15.762185282 +0100
++++ libjingle-0.4.0/talk/p2p/base/sessionmanager.h	2012-12-06 22:16:21.350233649 +0100
+@@ -156,7 +156,7 @@ class SessionManager : public sigslot::h
+ 
+   // Creates and returns an error message from the given components.  The
+   // caller is responsible for deleting this.
+-  buzz::XmlElement* SessionManager::CreateErrorMessage(
++  buzz::XmlElement* CreateErrorMessage(
+       const buzz::XmlElement* stanza,
+       const buzz::QName& name,
+       const std::string& type,
+--- libjingle-0.4.0/talk/p2p/base/session_unittest.cc.bero	2012-12-06 22:19:04.672645787 +0100
++++ libjingle-0.4.0/talk/p2p/base/session_unittest.cc	2012-12-06 22:19:11.052701914 +0100
+@@ -1,5 +1,6 @@
+ #include <iostream>
+ #include <sstream>
++#include <cstdio>
+ #include <deque>
+ #include <map>
+ 
+--- libjingle-0.4.0/talk/p2p/base/stun.cc.bero	2012-12-06 22:15:47.866944537 +0100
++++ libjingle-0.4.0/talk/p2p/base/stun.cc	2012-12-06 22:15:54.518001865 +0100
+@@ -29,6 +29,7 @@
+ #include "talk/p2p/base/stun.h"
+ #include <iostream>
+ #include <cassert>
++#include <cstring>
+ 
+ #if defined(_MSC_VER) && _MSC_VER < 1300
+ namespace std {
+--- libjingle-0.4.0/talk/p2p/base/stunserver.cc.bero	2012-12-06 22:17:14.145689521 +0100
++++ libjingle-0.4.0/talk/p2p/base/stunserver.cc	2012-12-06 22:17:29.477822050 +0100
+@@ -28,6 +28,7 @@
+ #include "talk/base/bytebuffer.h"
+ #include "talk/p2p/base/stunserver.h"
+ #include <iostream>
++#include <cstring>
+ 
+ #ifdef POSIX
+ extern "C" {
+--- libjingle-0.4.0/talk/p2p/base/stunserver_unittest.cc.bero	2012-12-06 22:17:47.009972771 +0100
++++ libjingle-0.4.0/talk/p2p/base/stunserver_unittest.cc	2012-12-06 22:17:53.333028098 +0100
+@@ -4,6 +4,7 @@
+ #include "talk/base/host.h"
+ #include "talk/p2p/base/stunserver.h"
+ #include <cstring>
++#include <cstdio>
+ #include <iostream>
+ #include <cassert>
+ 
+--- libjingle-0.4.0/talk/session/fileshare/fileshare.cc.bero	2012-12-06 22:20:39.759470364 +0100
++++ libjingle-0.4.0/talk/session/fileshare/fileshare.cc	2012-12-06 22:21:15.996785014 +0100
+@@ -670,8 +670,8 @@ void FileShareSession::OnHttpRequest(tal
+         && !query.empty()
+         && (sscanf(query.c_str(), "width=%u&height=%u",
+                    &width, &height) == 2)) {
+-      width = talk_base::_max<unsigned int>(1, talk_base::_min(width, kMaxPreviewSize));
+-      height = talk_base::_max<unsigned int>(1, talk_base::_min(height, kMaxPreviewSize));
++      width = talk_base::_max<unsigned int>(1, talk_base::_min<unsigned int>(width, kMaxPreviewSize));
++      height = talk_base::_max<unsigned int>(1, talk_base::_min<unsigned int>(height, kMaxPreviewSize));
+       std::string pathname;
+       if (is_sender_) {
+         talk_base::Pathname local_path;
+--- libjingle-0.4.0/talk/xmpp/xmppclient.h.bero	2012-12-06 22:15:16.466673754 +0100
++++ libjingle-0.4.0/talk/xmpp/xmppclient.h	2012-12-06 22:15:22.079722035 +0100
+@@ -138,7 +138,7 @@ private:
+     }
+   }
+ 
+-  std::string XmppClient::GetStateName(int state) const {
++  std::string GetStateName(int state) const {
+     switch (state) {
+       case STATE_PRE_XMPP_LOGIN:      return "PRE_XMPP_LOGIN";
+       case STATE_START_XMPP_LOGIN:  return "START_XMPP_LOGIN";
+--- libjingle-0.4.0/talk/base/Makefile.am.bero	2012-12-06 22:31:33.339178573 +0100
++++ libjingle-0.4.0/talk/base/Makefile.am	2012-12-06 22:32:01.730428255 +0100
+@@ -87,7 +87,6 @@ include_HEADERS =            asyncfile.h
+                             winping.h \
+                             socketadapters.h \
+                             socketaddress.h \
+-                            host.h \
+                             socketaddresspair.h \
+                             Equifax_Secure_Global_eBusiness_CA-1.h \
+                             stream.h \
+@@ -150,3 +150,5 @@ EXTRA_DIST =  	diskcache_win32.h \
+                 schanneladapter.h \
+                 schanneladapter.cc \
+                 sec_buffer.h
++
++libcricketbase_la_LIBADD = -lssl -lcrypto
+--- libjingle-0.4.0/talk/p2p/base/Makefile.am.bero	2012-12-06 22:40:57.957177359 +0100
++++ libjingle-0.4.0/talk/p2p/base/Makefile.am	2012-12-06 22:49:47.100362774 +0100
+@@ -54,6 +54,7 @@ TESTLIBS = ../../base/libcrickettest.la
+ bin_PROGRAMS = relayserver stunserver
+ noinst_PROGRAMS = stunserver_unittest session_unittest port_unittest
+ 
++libcricketp2pbase_la_LIBADD = ../../base/libcricketbase.la $(XMLLIBS) -lpthread
+ relayserver_SOURCES = relayserver.cc relayserver_main.cc
+ relayserver_LDADD = $(P2PLIBS)
+ stunserver_SOURCES = stunserver.cc stunserver_main.cc

@@ -1,2 +1,4 @@
+removed_sources:
+  libjingle-0.3.12.tar.gz: 7435366a5f9c228dc7fa7e47e94a7702ede0bc2e
 sources:
-  "libjingle-0.3.12.tar.gz:"	7435366a5f9c228dc7fa7e47e94a7702ede0bc2e
+  libjingle-0.4.0.tar.gz: 56ae5e54a2d4c6d8f6dc362aaad4f303407c6cd5

@@ -6,13 +6,13 @@
 
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
 Name:		libjingle
-Version:	0.3.12
-Release:	%mkrel 2
+Version:	0.4.0
+Release:	1
 License:	BSD
 Group:		System/Servers
 URL:		http://sourceforge.net/projects/libjingle
-Source0:	http://farsight.freedesktop.org/releases/libjingle/%{name}-%{version}.tar.gz
-Patch0:		libjingle-0.3.12-linkage_fix.diff
+Source0:	http://ignum.dl.sourceforge.net/project/libjingle/libjingle/%version/libjingle-%version.tar.gz
+Patch0:		libjingle-0.4.0-compile.patch
 BuildRequires:	glib2-devel 
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
@@ -20,7 +20,6 @@ BuildRequires:	expat-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Libjingle is a set of C++ components provided by Google to interoperate with
@@ -60,12 +59,12 @@ This package contains the static %{name} library and its header files
 needed to compile applications such as stegdetect, etc.
 
 %prep
-
 %setup -q
-%patch0 -p1
+%apply_patches
 
 find . -type d -exec chmod 755 {} \;
 find . -type f -exec chmod 644 {} \;
+find . -name Makefile.am |xargs sed -i -e 's,noinst_LTLIB,lib_LTLIB,g;s,noinst_HEAD,include_HEAD,g'
 
 # cleanup
 for i in `find . -type d -name .svn`; do
@@ -87,26 +86,17 @@ libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; aut
 %make
 
 %install
-rm -rf %{buildroot}
-
-%makeinstall
-
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%clean
-rm -rf %{buildroot}
+%makeinstall_std
+# Let's not conflict with standard tools
+mv %buildroot%_bindir/login %buildroot%_bindir/%name-login
 
 %files
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog README
 %{_bindir}/relayserver
 %{_bindir}/stunserver
+%_bindir/%name-login
+%_bindir/pcp
 
 %files -n %{libname}
 %defattr(-,root,root)
@@ -117,5 +107,49 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_libdir}/*.la
-%{_libdir}/pkgconfig/*.pc
+
+
+%changelog
+* Fri Oct 17 2008 Oden Eriksson <oeriksson@mandriva.com> 0.3.12-1mdv2009.1
++ Revision: 294791
+- 0.3.12 (0.4.0 will be another package)
+- fix linkage, still _disable_ld_no_undefined has to be used
+- 0.4.0
+- added other gcc43 patches (more fixes needed)
+- added a gcc43 patch from fedora
+
+  + Thierry Vignaud <tvignaud@mandriva.com>
+    - rebuild
+    - kill re-definition of %%buildroot on Pixel's request
+
+  + Pixel <pixel@mandriva.com>
+    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+* Tue Jul 10 2007 Funda Wang <fundawang@mandriva.org> 0.3.11-1mdv2008.0
++ Revision: 50828
+- New version
+
+
+* Tue Oct 10 2006 Nicolas LÃ©cureuil <neoclust@mandriva.org> 0.3.10-1mdv2007.0
++ Revision: 63091
+- New release 0.3.10
+- Clean specfile
+- Rediff Patch0
+- import libjingle-0.3.0-3mdv2007.0
+
+* Wed Jun 21 2006 Oden Eriksson <oeriksson@mandriva.com> 0.3.0-3mdv2007.0
+- libified
+- added some libtool fixes (P0)
+- added fixes from tapioca svn trunk (P1)
+- added P2,P3,P4 from the sf tracker
+- added lib64 fixes
+
+* Fri Apr 07 2006 Nicolas Lécureuil <neoclust@mandriva.org> 0.3.0-2mdk
+- Add post/postun
+
+* Fri Apr 07 2006 Nicolas Lécureuil <neoclust@mandriva.org> 0.3.0-1mdk
+- First Mandriva release
+
