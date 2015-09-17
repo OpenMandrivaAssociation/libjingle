@@ -26,13 +26,15 @@ index 6491fd6..23759c6 100644
  
    // ProcCpuInfo reads cpu speed from "cpu MHz" under /proc/cpuinfo.
 diff --git a/talk/base/systeminfo.h b/talk/base/systeminfo.h
-index 487251a..0694f60 100644
+index 487251a..b30b75b 100644
 --- a/talk/base/systeminfo.h
 +++ b/talk/base/systeminfo.h
-@@ -40,6 +40,7 @@ class SystemInfo {
+@@ -39,7 +39,8 @@ class SystemInfo {
+   enum Architecture {
      SI_ARCH_X86 = 0,
      SI_ARCH_X64 = 1,
-     SI_ARCH_ARM = 2
+-    SI_ARCH_ARM = 2
++    SI_ARCH_ARM = 2,
 +    SI_ARCH_AARCH64 = 3
    };
  
