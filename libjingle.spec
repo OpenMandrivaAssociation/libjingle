@@ -1,25 +1,75 @@
 %define _disable_ld_no_undefined 1
 
-%define	major 0
+%define	major 1
 %define libname	%mklibname jingle %{major}
-%define develname %mklibname -d jingle
+%define libnamedev %mklibname -d jingle
+%define libnamestaticdev %mklibname jingle -d -s
+
 
 Summary:	Google Talk's implementation of Jingle and Jingle-Audio
-Name:		libjingle
-Version:	0.4.0
-Release:	2
-License:	BSD
 Group:		System/Servers
-URL:		http://sourceforge.net/projects/libjingle
-Source0:	http://ignum.dl.sourceforge.net/project/libjingle/libjingle/%version/libjingle-%version.tar.gz
-Patch0:		libjingle-0.4.0-compile.patch
-BuildRequires:	glib2-devel 
+Name:		libjingle
+Version:	0.6.14
+Release:	1
+License:	BSD
+URL:            http://code.google.com/apis/talk/libjingle/
+Source0:        http://libjingle.googlecode.com/files/%{name}-%{version}.zip
+# Use Makefiles, dammit.
+Patch0:		libjingle-0.6.14-build-sanity.patch
+# talk/base/basictypes.h and talk/base/logging.h must be included 
+# before any header with __BEGIN_DECLS, notably, sys/types.h
+Patch1:		libjingle-0.5.1-C-linkage-fix.patch
+# We need <cstdlib> for NULL.
+Patch2:		libjingle-0.5.8-NULL-fix.patch
+# In file included from /usr/include/fcntl.h:41:0,
+#                 from physicalsocketserver.cc:37:
+#/usr/include/bits/stat.h:91:21: error: field 'st_atim' has incomplete type
+#/usr/include/bits/stat.h:92:21: error: field 'st_mtim' has incomplete type
+#/usr/include/bits/stat.h:93:21: error: field 'st_ctim' has incomplete type
+# FIX: Include <time.h> first.
+Patch3:		libjingle-0.5.8-statfix.patch
+# md5.h had a typedef for uint32 that did not match the one in basictypes.h
+Patch4:		libjingle-0.5.1-uint32-fix.patch
+# thread.cc: In static member function â€˜static bool talk_base::Thread::SleepMs(int)â€™:
+# thread.cc:199:19: error: aggregate â€˜timespec tsâ€™ has incomplete type and cannot be defined
+# thread.cc:202:34: error: â€˜nanosleepâ€™ was not declared in this scope
+# This happens because a local header is included before time.h
+Patch5:		libjingle-0.5.1-timefix.patch
+# unixfilesystem.cc wouldn't compile.
+Patch6:		libjingle-0.5.1-unixfilesystemfix.patch
+# Google seems to love to be stupid with headers.
+# Especially when they're in "third_party" code.
+# Hardcoding paths in include files is dumb.
+Patch7:		libjingle-0.5.8-system-expat.patch
+Patch8:		libjingle-0.5.8-system-srtp.patch
+# Fix devicemanager.cc to compile
+Patch9:		libjingle-0.6.14-devicemanager-fix.patch
+# Fix v4llookup.cc to compile
+Patch10:	libjingle-0.5.8-v4llookup-fix.patch
+# Fix type and definition conflicts with Chromium
+Patch11:        libjingle-0.6.6-fixconflict.patch
+# Make sure linux.h/linux.cc pulls in config.h for LINUX define
+Patch14:	libjingle-0.5.8-config-linux.patch
+# Fix 0.5.2 compilation
+Patch16:	libjingle-0.6.6-compilefix.patch
+# Fix missing cstdlib for size_t
+Patch17:	libjingle-0.6.0-size_t.patch
+# Fix obsolete macro usage
+Patch18:	libjingle-0.5.8-fixmacro.patch
+# Gcc 4.7.0 no longer includes unistd.h by default
+Patch20:	libjingle-0.6.6-unistd.patch
+Patch21:	libjingle-0.6.14-automake-1.13.patch
+BuildRequires:	pkgconfig(glib-2.0)
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 
 BuildRequires:	expat-devel
+BuildRequires:	srtp-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
+BuildRequires:	kernel-headers
+BuildRequires:	pkgconfig(udev)
+BuildRequires:	alsa-oss-devel
 
 %description
 Libjingle is a set of C++ components provided by Google to interoperate with
@@ -28,7 +78,14 @@ source code for Google's implementation of Jingle and Jingle-Audio, two
 proposed extensions to the XMPP standard that are currently available in
 experimental draft form.
 
-%package -n	%{libname}
+%files
+%doc AUTHORS COPYING ChangeLog README
+%{_bindir}/relayserver
+%{_bindir}/stunserver
+
+
+#------------------------------------------------------------------------------
+%package -n %{libname}
 Summary:	Shared Google Talk's implementation of Jingle and Jingle-Audio library
 Group:          System/Libraries
 
@@ -41,115 +98,66 @@ experimental draft form.
 
 This package contains the shared %{name} library.
 
-%package -n	%{develname}
+%files -n %{libname}
+%{_libdir}/%{name}*.so.%{major}*
+
+
+#------------------------------------------------------------------------------
+%package -n %{libnamedev}
 Summary:	Static library and header files for the %{name} library
 Group:		Development/C++
-Provides:	%{name}-devel = %{version}
+Provides:	%{name}-devel = %{version}-%{release}
 Requires:	%{libname} = %{version}-%{release}
-Obsoletes:	%{mklibname -d jingle 0}
 
-%description -n	%{develname}
+%description -n	%{libnamedev}
 Libjingle is a set of C++ components provided by Google to interoperate with
 Google Talk's peer-to-peer and voice calling capabilities. The package includes
 source code for Google's implementation of Jingle and Jingle-Audio, two
 proposed extensions to the XMPP standard that are currently available in
 experimental draft form.
 
+%files -n %{libnamedev}
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/%{name}-0.6
+%{_libdir}/%{name}*.so
+
+
+#------------------------------------------------------------------------------
+%package -n %{libnamestaticdev}
+Summary:	Static files for the %{name} library
+Group:		Development/C++
+Requires:	%{libnamedev} = %{version}-%{release}
+Provides:	%{name}-static-devel = %{version}-%{release}
+Provides:	lib%{name}-static-devel = %{version}-%{release}
+
+%description -n %{libnamestaticdev}
 This package contains the static %{name} library and its header files
 needed to compile applications such as stegdetect, etc.
 
+%files -n %{libnamestaticdev}
+%{_libdir}/%{name}*.a
+
+
+#------------------------------------------------------------------------------
 %prep
 %setup -q
+find . -perm 0640 | xargs chmod 0644
 %apply_patches
 
-find . -type d -exec chmod 755 {} \;
-find . -type f -exec chmod 644 {} \;
-find . -name Makefile.am |xargs sed -i -e 's,noinst_LTLIB,lib_LTLIB,g;s,noinst_HEAD,include_HEAD,g'
+sed -i 's!-lpthread!-lpthread -ldl!g' talk/p2p/base/Makefile.*
+touch NEWS ChangeLog
+autoreconf -i
 
-# cleanup
-for i in `find . -type d -name .svn`; do
-    if [ -e "$i" ]; then rm -rf $i; fi >&/dev/null
-done
-
-# lib64 fix
-perl -pi -e "s|/lib\b|/%{_lib}|g" configure*
+rm -rf talk/base/time.h
 
 %build
-rm -rf autom4te.cache
-rm -f configure
-libtoolize --copy --force; aclocal; automake --add-missing --copy --foreign; autoconf
+%configure --enable-static
 
-%configure2_5x \
-    --enable-shared \
-    --enable-static
+## Remove rpath.
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 %make
 
 %install
 %makeinstall_std
-# Let's not conflict with standard tools
-mv %buildroot%_bindir/login %buildroot%_bindir/%name-login
-
-%files
-%defattr(-, root, root)
-%doc AUTHORS COPYING ChangeLog README
-%{_bindir}/relayserver
-%{_bindir}/stunserver
-%_bindir/%name-login
-%_bindir/pcp
-
-%files -n %{libname}
-%defattr(-,root,root)
-%{_libdir}/lib*.so.*
-
-%files -n %{develname}
-%defattr(-, root, root)
-%{_includedir}/*
-%{_libdir}/*.so
-%{_libdir}/*.a
-
-
-%changelog
-* Fri Oct 17 2008 Oden Eriksson <oeriksson@mandriva.com> 0.3.12-1mdv2009.1
-+ Revision: 294791
-- 0.3.12 (0.4.0 will be another package)
-- fix linkage, still _disable_ld_no_undefined has to be used
-- 0.4.0
-- added other gcc43 patches (more fixes needed)
-- added a gcc43 patch from fedora
-
-  + Thierry Vignaud <tvignaud@mandriva.com>
-    - rebuild
-    - kill re-definition of %%buildroot on Pixel's request
-
-  + Pixel <pixel@mandriva.com>
-    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
-
-  + Olivier Blin <oblin@mandriva.com>
-    - restore BuildRoot
-
-* Tue Jul 10 2007 Funda Wang <fundawang@mandriva.org> 0.3.11-1mdv2008.0
-+ Revision: 50828
-- New version
-
-
-* Tue Oct 10 2006 Nicolas Lécureuil <neoclust@mandriva.org> 0.3.10-1mdv2007.0
-+ Revision: 63091
-- New release 0.3.10
-- Clean specfile
-- Rediff Patch0
-- import libjingle-0.3.0-3mdv2007.0
-
-* Wed Jun 21 2006 Oden Eriksson <oeriksson@mandriva.com> 0.3.0-3mdv2007.0
-- libified
-- added some libtool fixes (P0)
-- added fixes from tapioca svn trunk (P1)
-- added P2,P3,P4 from the sf tracker
-- added lib64 fixes
-
-* Fri Apr 07 2006 Nicolas L�cureuil <neoclust@mandriva.org> 0.3.0-2mdk
-- Add post/postun
-
-* Fri Apr 07 2006 Nicolas L�cureuil <neoclust@mandriva.org> 0.3.0-1mdk
-- First Mandriva release
-
