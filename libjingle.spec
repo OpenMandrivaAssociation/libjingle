@@ -70,6 +70,7 @@ BuildRequires:	libtool
 BuildRequires:	kernel-headers
 BuildRequires:	pkgconfig(udev)
 BuildRequires:	alsa-oss-devel
+BuildRequires:	pkgconfig(gtk+-2.0)
 
 %description
 Libjingle is a set of C++ components provided by Google to interoperate with
