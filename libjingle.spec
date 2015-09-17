@@ -59,6 +59,7 @@ Patch18:	libjingle-0.5.8-fixmacro.patch
 # Gcc 4.7.0 no longer includes unistd.h by default
 Patch20:	libjingle-0.6.6-unistd.patch
 Patch21:	libjingle-0.6.14-automake-1.13.patch
+Patch22:	libjingle-0.6.14-aarch64.patch
 BuildRequires:	pkgconfig(glib-2.0)
 BuildRequires:	dbus-devel 
 BuildRequires:	openssl-devel 

@@ -1,0 +1,39 @@
+diff --git a/talk/base/systeminfo.cc b/talk/base/systeminfo.cc
+index 6491fd6..23759c6 100644
+--- a/talk/base/systeminfo.cc
++++ b/talk/base/systeminfo.cc
+@@ -99,6 +99,8 @@ SystemInfo::SystemInfo()
+ 
+ #if defined(__arm__)
+   cpu_arch_ = SI_ARCH_ARM;
++#elif defined(__aarch64__)
++  cpu_arch_ = SI_ARCH_AARCH64;
+ #elif defined(CPU_X86)
+   cpu_arch_ = SI_ARCH_X86;
+ #else
+@@ -145,11 +147,13 @@ SystemInfo::SystemInfo()
+     proc_info.GetNumPhysicalCpus(&physical_cpus_);
+     proc_info.GetCpuFamily(&cpu_family_);
+ #if !defined(__arm__)
++#if !defined(__aarch64__)
+     // These values aren't found on ARM systems.
+     proc_info.GetSectionIntValue(0, "model", &cpu_model_);
+     proc_info.GetSectionIntValue(0, "stepping", &cpu_stepping_);
+     proc_info.GetSectionIntValue(0, "cpu MHz", &cpu_speed_);
+ #endif
++#endif
+   }
+ 
+   // ProcCpuInfo reads cpu speed from "cpu MHz" under /proc/cpuinfo.
+diff --git a/talk/base/systeminfo.h b/talk/base/systeminfo.h
+index 487251a..0694f60 100644
+--- a/talk/base/systeminfo.h
++++ b/talk/base/systeminfo.h
+@@ -40,6 +40,7 @@ class SystemInfo {
+     SI_ARCH_X86 = 0,
+     SI_ARCH_X64 = 1,
+     SI_ARCH_ARM = 2
++    SI_ARCH_AARCH64 = 3
+   };
+ 
+   SystemInfo();
