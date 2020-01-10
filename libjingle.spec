@@ -144,7 +144,7 @@ needed to compile applications such as stegdetect, etc.
 %prep
 %setup -q
 find . -perm 0640 | xargs chmod 0644
-%apply_patches
+%autopatch -p1
 
 sed -i 's!-lpthread!-lpthread -ldl!g' talk/p2p/base/Makefile.*
 touch NEWS ChangeLog
