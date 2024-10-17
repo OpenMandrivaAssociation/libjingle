@@ -12,7 +12,7 @@ Name:		libjingle
 Version:	0.6.14
 Release:	1
 License:	BSD
-URL:            http://code.google.com/apis/talk/libjingle/
+URL:            https://code.google.com/apis/talk/libjingle/
 Source0:        http://libjingle.googlecode.com/files/%{name}-%{version}.zip
 # Use Makefiles, dammit.
 Patch0:		libjingle-0.6.14-build-sanity.patch
